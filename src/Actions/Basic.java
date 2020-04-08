@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.ie.InternetExplorerDriver;
@@ -34,44 +36,61 @@ public class Basic {
    }
    public void WaitForElement(WebElement web)
    {
+	   JavascriptExecutor js = (JavascriptExecutor) w;  
+	   js.executeScript("window.focus();");
        WebDriverWait wait=new WebDriverWait(w,50);
        wait.until(ExpectedConditions.visibilityOf(web));
    }
-   public void sendKeysToElement(Map<String, String> map,String txt)
+   public void sendKeysToElement(String map,String txt)
    {
+	   JavascriptExecutor js = (JavascriptExecutor) w;  
+	   js.executeScript("window.focus();");
        WebElement web;
-       if(map.containsKey("xpath"))
-           web=w.findElement(By.xpath(map.get("xpath")));
+       System.out.println(map);
+       if(map.contains("/"))
+           web=w.findElement(By.xpath(map));
        else
-	   web=w.findElement(By.id(map.get("id")));  
+	   web=w.findElement(By.id(map));  
        WaitForElement(web);
        web.sendKeys(txt);
    }
-   public void clickOnElement(Map<String, String> map)
+   public void clickOnElement(String map)
    {
+	   JavascriptExecutor js = (JavascriptExecutor) w;  
+	   js.executeScript("window.focus();");
        WebElement web;
-       if(map.containsKey("xpath"))
-           web=w.findElement(By.xpath(map.get("xpath")));
+       System.out.println(map);
+       if(map.contains("/"))
+           web=w.findElement(By.xpath(map));
        else
-	   web=w.findElement(By.id(map.get("id")));  
+	   web=w.findElement(By.id(map));  
        WaitForElement(web);
        web.click(); 
    }
-   public void SelectItemFromElements(Map<String, String> map,String text)
+   public void SelectItemFromElements(String entry,String text)
    {
+	   JavascriptExecutor js = (JavascriptExecutor) w;  
+	   js.executeScript("window.focus();");
        Select sel ;
-       if(map.containsKey("xpath"))
-           sel=new Select(w.findElement(By.xpath(map.get("xpath"))));
-       else
-	   sel=new Select(w.findElement(By.xpath(map.get("id"))));
+       w.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+       if(entry.contains("/"))
+           sel=new Select(w.findElement(By.xpath(entry)));
+       else	   
+	      sel=new Select(w.findElement(By.id(entry)));
        sel.selectByVisibleText(text);
    }
    public void SwitchToFrame(String frame)
    {
-       w.switchTo().frame(frame);
+	   JavascriptExecutor js = (JavascriptExecutor) w;  
+	   js.executeScript("window.focus();");
+	   WebDriverWait wait=new WebDriverWait(w,60);
+	   wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(frame));
+       //w.switchTo().frame(frame);
    }
    public void closeHandles()
    {
+	   JavascriptExecutor js = (JavascriptExecutor) w;  
+	   js.executeScript("window.focus();");
        WebDriverWait wait=new WebDriverWait(w,50);
 	wait.until(ExpectedConditions.numberOfWindowsToBe(2));
 	//String s=driver.getWindowHandle();
@@ -81,16 +100,18 @@ public class Basic {
 	w.close();
 	w.switchTo().defaultContent();
    }
-   public void performDragDrop(Map<String, String> map1,Map<String, String> map2)
+   public void performDragDrop(String map1,String map2)
    {
+	   JavascriptExecutor js = (JavascriptExecutor) w;  
+	   js.executeScript("window.focus();");
        WebElement web1,web2;
-       if(map1.containsKey("xpath") && map2.containsKey("xpath"))
+       if(map1.contains("/") && map2.contains("/"))
        {
-           web1=w.findElement(By.xpath(map1.get("xpath")));
-           web2=w.findElement(By.xpath(map2.get("xpath")));
+           web1=w.findElement(By.xpath(map1));
+           web2=w.findElement(By.xpath(map2));
        }else{
-	   web1=w.findElement(By.xpath(map1.get("id")));
-           web2=w.findElement(By.xpath(map2.get("id")));
+	   web1=w.findElement(By.xpath(map1));
+           web2=w.findElement(By.xpath(map2));
 	   }  
        //Using Action class for drag and drop.		
        Actions act=new Actions(w);					
